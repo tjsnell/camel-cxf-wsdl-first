@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.example.customerservice.server;
+package cc.notsoclever.examples.cxf.wsdlfirst.server;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -56,12 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     public CustomerServiceImpl() {
     }
-    /**
-     * The WebServiceContext can be used to retrieve special attributes like the
-     * user principal. Normally it is not needed
-     */
-    @Resource
-    WebServiceContext wsContext;
+
 
     public List<Customer> getCustomersByName(String name) throws NoSuchCustomerException {
         if ("None".equals(name)) {

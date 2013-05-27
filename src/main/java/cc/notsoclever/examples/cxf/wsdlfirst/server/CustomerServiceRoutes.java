@@ -16,24 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.example.customerservice.client;
+package cc.notsoclever.examples.cxf.wsdlfirst.server;
 
+import org.apache.camel.builder.RouteBuilder;
 
+public class CustomerServiceRoutes extends RouteBuilder {
+    @Override
+    public void configure() throws Exception {
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+        from("cxf:bean:customerService?skipFaultLogging=true")
+                .to("CustomerServiceProcessor");
 
-public final class CustomerServiceSpringClient {
-
-    private CustomerServiceSpringClient() {
-    }
-
-    public static void main(String args[]) throws Exception {
-        // Initialize the spring context and fetch our test client
-        ClassPathXmlApplicationContext context 
-            = new ClassPathXmlApplicationContext(new String[] {"classpath:client-applicationContext.xml"});
-        CustomerServiceTester client = (CustomerServiceTester)context.getBean("tester");
-        
-        client.testCustomerService();
-        System.exit(0);
     }
 }

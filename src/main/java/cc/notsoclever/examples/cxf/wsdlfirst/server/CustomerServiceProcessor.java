@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.example.customerservice.server;
+package cc.notsoclever.examples.cxf.wsdlfirst.server;
 
 import com.example.customerservice.Customer;
 import com.example.customerservice.CustomerService;
@@ -24,11 +24,15 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.component.cxf.common.message.CxfConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerServiceProcessor implements Processor {
+    private static final transient Logger LOG = LoggerFactory.getLogger(CustomerServiceProcessor.class);
+
     CustomerService customerService;
 
     @Override
@@ -41,13 +45,15 @@ public class CustomerServiceProcessor implements Processor {
             String name = inMessage.getBody(String.class);
             List<Customer> customers = customerService.getCustomersByName(name);
 
-            // return values in camel-cxf are in a List
+            LOG.info("getCustomersByName called with: " + name);
+
+            // return values to camel-cxf in a List
             List c = new ArrayList();
             c.add(customers);
             exchange.getOut().setBody(c);
 
         } else if ("updateCustomer".equals(operationName)) {
-            System.out.println("Update customer");
+            LOG.info("updateCustomer called");
             exchange.getOut().setBody(null);
         }
 

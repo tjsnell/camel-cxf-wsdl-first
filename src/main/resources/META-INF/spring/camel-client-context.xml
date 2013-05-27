@@ -32,13 +32,13 @@
                      serviceClass="com.example.customerservice.CustomerService"
                      xmlns:s="http://example.com/customerService"/>
 
-    <bean id="CustomerService" class="com.example.customerservice.server.CustomerServiceImpl"/>
+    <bean id="CustomerService" class="cc.notsoclever.examples.cxf.wsdlfirst.server.CustomerServiceImpl"/>
 
-    <bean id="CustomerServiceProcessor" class="com.example.customerservice.server.CustomerServiceProcessor">
+    <bean id="CustomerServiceProcessor" class="cc.notsoclever.examples.cxf.wsdlfirst.server.CustomerServiceProcessor">
         <property name="customerService" ref="CustomerService"/>
     </bean>
 
-    <bean id="customerRoute" class="com.example.customerservice.server.CustomerServiceRoutes">
+    <bean id="customerRoute" class="cc.notsoclever.examples.cxf.wsdlfirst.client.CustomerServiceRoutes">
     </bean>
 
     <camel:camelContext xmlns="http://camel.apache.org/schema/spring">
