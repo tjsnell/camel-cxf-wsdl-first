@@ -18,8 +18,8 @@
  */
 package cc.notsoclever.examples.cxf.wsdlfirst.server;
 
-import com.example.customerservice.Customer;
-import com.example.customerservice.CustomerService;
+import cc.notsoclever.customerservice.Customer;
+import cc.notsoclever.customerservice.CustomerService;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
@@ -48,13 +48,17 @@ public class CustomerServiceProcessor implements Processor {
             LOG.info("getCustomersByName called with: " + name);
 
             // return values to camel-cxf in a List
-            List c = new ArrayList();
+            List<List> c = new ArrayList<List>();
             c.add(customers);
             exchange.getOut().setBody(c);
 
         } else if ("updateCustomer".equals(operationName)) {
             LOG.info("updateCustomer called");
-            exchange.getOut().setBody(null);
+            Customer customer = inMessage.getBody(Customer.class);
+            customer = customerService.updateCustomer(customer);
+            exchange.getOut().setBody(customer);
+        } else {
+            LOG.error("Invalid operation called: " + operationName);
         }
 
     }

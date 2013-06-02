@@ -19,8 +19,8 @@ package cc.notsoclever.examples.cxf.wsdlfirst.client;
  * under the License.
  */
 
-import com.example.customerservice.Customer;
-import com.example.customerservice.NoSuchCustomerException;
+import cc.notsoclever.customerservice.Customer;
+import cc.notsoclever.customerservice.NoSuchCustomerException;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -42,21 +42,25 @@ public class CustomerServiceRoutes extends RouteBuilder {
 
         LOG.info("Starting client routes");
 
+        // Test NoSuchCustomerException
+
         onException(NoSuchCustomerException.class)
                 .log("SUCCESS NotFoundTest - NoSuchCustomerException detected.")
                 .handled(true);
 
         from("timer://NotFoundTest?repeatCount=1")
-                .setHeader(CxfConstants.OPERATION_NAMESPACE, simple("http://customerservice.example.com/"))
+                .setHeader(CxfConstants.OPERATION_NAMESPACE, simple("http://customerservice.notsoclever.cc/"))
                 .setHeader(CxfConstants.OPERATION_NAME, simple("getCustomersByName"))
-                .setBody(simple("None"))
+                .setBody(simple("Walker"))
                 .to("cxf:bean:customerService")
                 .log(LoggingLevel.ERROR, "ERROR - NoSuchCustomerException should have been thrown");
 
+        // Test getCustomersByName
+
         from("timer://FindTest?repeatCount=1")
-                .setHeader(CxfConstants.OPERATION_NAMESPACE, simple("http://customerservice.example.com/"))
+                .setHeader(CxfConstants.OPERATION_NAMESPACE, simple("http://customerservice.notsoclever.cc/"))
                 .setHeader(CxfConstants.OPERATION_NAME, simple("getCustomersByName"))
-                .setBody(simple("Smith"))
+                .setBody(simple("Johns"))
                 .to("cxf:bean:customerService")
                 .process(new Processor() {
                     @Override
@@ -64,8 +68,49 @@ public class CustomerServiceRoutes extends RouteBuilder {
                         MessageContentsList contents = exchange.getIn().getBody(MessageContentsList.class);
                         List<Customer> customers = (List<Customer>) contents.get(0);
                         Assert.assertEquals(2, customers.size());
-                        Assert.assertEquals("Smith", customers.get(0).getName());
+                        Assert.assertEquals("Johns, Mary", customers.get(0).getName());
                         LOG.info("SUCCESS getCustomersByName");
+                    }
+                });
+
+
+        // Test updateCustomer
+
+        // 1 - Send a request for a customer
+        // 2 - Set a new value for number of orders
+        from("timer://UpdateTest?repeatCount=1")
+                .setHeader(CxfConstants.OPERATION_NAMESPACE, simple("http://customerservice.notsoclever.cc/"))
+                .setHeader(CxfConstants.OPERATION_NAME, simple("getCustomersByName"))
+                .setBody(simple("Jones"))
+                .to("cxf:bean:customerService")
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        MessageContentsList contents = exchange.getIn().getBody(MessageContentsList.class);
+                        List<Customer> customers = (List<Customer>) contents.get(0);
+                        Customer customer = customers.get(0);
+                            customer.setNumOrders(99);
+                        exchange.getIn().setBody(customer);
+                    }
+                })
+                .to("direct:updateTest");
+
+        // 3 - Send the updated customer to updateCustomer
+        from("direct:updateTest")
+                .setHeader(CxfConstants.OPERATION_NAMESPACE, simple("http://customerservice.notsoclever.cc/"))
+                .setHeader(CxfConstants.OPERATION_NAME, simple("updateCustomer"))
+                .to("cxf:bean:customerService")
+                .to("direct:confirmUpdate");
+
+        // 4 - Retrieve the results of the update and confirm that the values are set
+        from("direct:confirmUpdate")
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        MessageContentsList contents = exchange.getIn().getBody(MessageContentsList.class);
+                        Customer customer = (Customer) contents.get(0);
+                        Assert.assertEquals(99, (int) customer.getNumOrders());
+                        LOG.info("SUCCESS: updateCustomer");
                     }
                 });
     }
