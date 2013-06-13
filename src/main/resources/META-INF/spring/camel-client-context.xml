@@ -23,7 +23,7 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <import resource="camel-context.xml"/>
+    <import resource="cxf-context.xml"/>
 
     <bean id="customerRoute" class="cc.notsoclever.examples.cxf.wsdlfirst.client.CustomerServiceRoutes">
     </bean>

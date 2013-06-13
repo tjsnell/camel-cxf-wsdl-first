@@ -25,7 +25,7 @@
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd">
 
-    <import resource="camel-context.xml"/>
+    <import resource="cxf-context.xml"/>
 
     <bean id="CustomerServiceProcessor" class="cc.notsoclever.examples.cxf.wsdlfirst.server.CustomerServiceProcessor">
         <property name="customerService" ref="CustomerService"/>
