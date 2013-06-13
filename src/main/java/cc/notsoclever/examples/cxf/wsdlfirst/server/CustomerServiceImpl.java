@@ -103,7 +103,10 @@ public class CustomerServiceImpl implements CustomerService {
         if (customers.containsKey(customer.getName())) {
             customers.put(customer.getName(), customer);
         } else {
-            LOG.error("Customer: " + customer.getName() + " not found.");
+            NoSuchCustomer noSuchCustomer = new NoSuchCustomer();
+            noSuchCustomer.setCustomerName(customer.getName());
+            throw new NoSuchCustomerException("Did not find any matching customer for name=" + customer.getName(),
+                    noSuchCustomer);
         }
         return customer;
     }

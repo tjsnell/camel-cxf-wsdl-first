@@ -19,20 +19,13 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:camel="http://camel.apache.org/schema/spring"
        xmlns:cxf="http://camel.apache.org/schema/cxf"
-       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd">
 
-    <cxf:cxfEndpoint id="customerService"
-                     address="http://localhost:9090/CustomerServicePort"
-                     serviceName="customer:customerServiceService"
-                     serviceClass="cc.notsoclever.customerservice.CustomerService"
-                     xmlns:s="http://notsoclever.cc/customerService"/>
-
-    <bean id="CustomerService" class="cc.notsoclever.examples.cxf.wsdlfirst.server.CustomerServiceImpl"/>
+    <import resource="camel-context.xml"/>
 
     <bean id="CustomerServiceProcessor" class="cc.notsoclever.examples.cxf.wsdlfirst.server.CustomerServiceProcessor">
         <property name="customerService" ref="CustomerService"/>

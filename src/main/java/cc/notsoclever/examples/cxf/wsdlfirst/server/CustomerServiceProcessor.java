@@ -27,7 +27,6 @@ import org.apache.camel.component.cxf.common.message.CxfConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerServiceProcessor implements Processor {
@@ -38,29 +37,19 @@ public class CustomerServiceProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         Message inMessage = exchange.getIn();
-
         String operationName = inMessage.getHeader(CxfConstants.OPERATION_NAME, String.class);
 
         if ("getCustomersByName".equals(operationName)) {
             String name = inMessage.getBody(String.class);
-            List<Customer> customers = customerService.getCustomersByName(name);
-
             LOG.info("getCustomersByName called with: " + name);
-
-            // return values to camel-cxf in a List
-            List<List> c = new ArrayList<List>();
-            c.add(customers);
-            exchange.getOut().setBody(c);
-
+            List<Customer> customers = customerService.getCustomersByName(name);
+            exchange.getOut().setBody(new Object[] {customers});
         } else if ("updateCustomer".equals(operationName)) {
             LOG.info("updateCustomer called");
             Customer customer = inMessage.getBody(Customer.class);
             customer = customerService.updateCustomer(customer);
             exchange.getOut().setBody(customer);
-        } else {
-            LOG.error("Invalid operation called: " + operationName);
         }
-
     }
 
     public void setCustomerService(CustomerService customerService) {

@@ -26,6 +26,5 @@ public class CustomerServiceRoutes extends RouteBuilder {
 
         from("cxf:bean:customerService")
                 .to("CustomerServiceProcessor");
-
     }
 }

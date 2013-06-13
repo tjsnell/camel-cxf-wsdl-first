@@ -82,10 +82,6 @@ Using either UNIX or Windows:
   mvn -Pserver  (from one command line window)
   mvn -Pclient  (from a second command line window)
 
-There is no special Maven profile for the Spring client and server but you can
-easily set it up yourself.
-
-
 To remove the code generated from the WSDL file and the .class files, run
 "mvn clean".
 
