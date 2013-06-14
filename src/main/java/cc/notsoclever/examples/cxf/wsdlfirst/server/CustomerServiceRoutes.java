@@ -24,7 +24,7 @@ public class CustomerServiceRoutes extends RouteBuilder {
     @Override
     public void configure() throws Exception {
 
-        from("cxf:bean:customerService")
+        from("cxf:bean:customerServiceEndpoint")
                 .to("CustomerServiceProcessor");
     }
 }

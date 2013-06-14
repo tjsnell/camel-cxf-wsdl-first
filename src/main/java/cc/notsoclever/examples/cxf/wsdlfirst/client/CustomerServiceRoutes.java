@@ -41,31 +41,28 @@ public class CustomerServiceRoutes extends RouteBuilder {
 
         LOG.info("Starting client routes");
 
-        // Test NoSuchCustomerException
-
-        onException(NoSuchCustomerException.class)
-                .log("SUCCESS: NotFoundTest - NoSuchCustomerException detected.")
-                .handled(true);
-
         // Fire off all the tests.
         from("timer://NotFoundTest?repeatCount=1")
                 .multicast()
                 .to("direct:getCustomersTest", "direct:noSuchCustomerTest", "direct:updateCustomerTest");
 
-        // Test noSuchCustomer execption
+        // Test noSuchCustomerException
         from("direct:noSuchCustomerTest")
+                .onException(NoSuchCustomerException.class)
+                   .log("SUCCESS: NotFoundTest - NoSuchCustomerException detected.")
+                   .handled(true)
+                .end()
                 .setHeader(CxfConstants.OPERATION_NAMESPACE, simple("http://customerservice.notsoclever.cc/"))
                 .setHeader(CxfConstants.OPERATION_NAME, simple("getCustomersByName"))
                 .setBody(simple("Walker"))
-                .to("cxf:bean:customerService")
-                .log(LoggingLevel.ERROR, "ERROR - NoSuchCustomerException should have been thrown");
+                .to("cxf:bean:customerServiceEndpoint");
 
         // Test getCustomersByName
         from("direct:getCustomersTest")
                 .setHeader(CxfConstants.OPERATION_NAMESPACE, simple("http://customerservice.notsoclever.cc/"))
                 .setHeader(CxfConstants.OPERATION_NAME, simple("getCustomersByName"))
                 .setBody(simple("Johns"))
-                .to("cxf:bean:customerService")
+                .to("cxf:bean:customerServiceEndpoint")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -84,7 +81,7 @@ public class CustomerServiceRoutes extends RouteBuilder {
                 .setHeader(CxfConstants.OPERATION_NAMESPACE, simple("http://customerservice.notsoclever.cc/"))
                 .setHeader(CxfConstants.OPERATION_NAME, simple("getCustomersByName"))
                 .setBody(simple("Jones"))
-                .to("cxf:bean:customerService")
+                .to("cxf:bean:customerServiceEndpoint")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -101,7 +98,7 @@ public class CustomerServiceRoutes extends RouteBuilder {
         from("direct:sendUpdate")
                 .setHeader(CxfConstants.OPERATION_NAMESPACE, simple("http://customerservice.notsoclever.cc/"))
                 .setHeader(CxfConstants.OPERATION_NAME, simple("updateCustomer"))
-                .to("cxf:bean:customerService")
+                .to("cxf:bean:customerServiceEndpoint")
                 .to("direct:confirmUpdate");
 
         // 3 - Retrieve the results of the update and confirm that the values are set
